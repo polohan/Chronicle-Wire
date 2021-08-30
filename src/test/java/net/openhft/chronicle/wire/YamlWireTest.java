@@ -55,6 +55,7 @@ import static net.openhft.chronicle.wire.YamlTokeniserTest.doTest;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class YamlWireTest extends WireTestCommon {
@@ -94,10 +95,16 @@ public class YamlWireTest extends WireTestCommon {
     public void testFieldWithComment2() {
         FieldWithComment2 f = new FieldWithComment2();
         f.field = "hello world";
-        Assert.assertEquals("!net.openhft.chronicle.wire.YamlWireTest$FieldWithComment2 {\n" +
+        Assert.assertThat(Marshallable.$toString(f), anyOf(
+            is("!net.openhft.chronicle.wire.YamlWireTest$FieldWithComment2 {\n" +
                 "  field: hello world, \t\t# a comment where the value=hello world\n" +
                 "  field2: !!null \"\"\n" +
-                "}\n", Marshallable.$toString(f));
+                "}\n"),
+            is("!net.openhft.chronicle.wire.YamlWireTest$FieldWithComment2 {\n" +
+                "  field2: !!null \"\",\n" +
+                "  field: hello world, \t\t# a comment where the value=hello world\n\n" +
+                "}\n")
+        ));
     }
 
     @Test
